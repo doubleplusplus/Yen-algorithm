@@ -260,6 +260,7 @@ int main()
     cout << cost << endl;
     */
     vector<vector<int>> A;
+    // shortest path from node 0 to 4, K = 8
     A = yen(g, 0, 4, 8);
     for(auto it = A.begin(); it != A.end(); ++it) {
         showlist(*it); 
