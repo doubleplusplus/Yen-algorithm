@@ -10,6 +10,7 @@ using namespace std;
 typedef pair<int, int> iPair; 
 typedef pair<int, vector<int>> vPair;
 
+int inf = 1000000;
 // This class represents a directed graph using 
 // adjacency list representation 
 class Graph 
@@ -81,7 +82,7 @@ public:
         //vector<int> dist(V, INT_MAX); 
         dist.reserve(V);
         for (int i=0; i<V; i++){
-            dist[i] = 100000;
+            dist[i] = inf;
         }
         // Insert source itself in priority queue and initialize 
         // its distance as 0. 
@@ -153,14 +154,14 @@ vector<int> slicing(vector<int>& arr, int X, int Y) {
 // psudocode: https://en.wikipedia.org/wiki/Yen%27s_algorithm
 vector<vector<int>> yen(Graph g, int s, int d, int K) {
     // Determine the shortest path from the s to the d
-    vector<vector<int>> A;
+    vector<vector<int> > A;
     //Graph g_copy = g;
     // apply dijkstra
     vector<int> path = g.dijkstra(s, d);
 
     A.push_back(path);
     // Initialize the set to store the potential kth shortest path.
-    priority_queue<vPair, vector<vPair>, greater<vPair>> B;
+    priority_queue<vPair, vector<vPair>, greater<vPair> > B;
     
     for (int k=1; k<K; k++){ 
         // The spur node ranges from the first node to the next to last node in the previous k-shortest path
@@ -195,10 +196,11 @@ vector<vector<int>> yen(Graph g, int s, int d, int K) {
             // Add the potential k-shortest path to the heap
             //if (totalPath not in B):
             //   B.append(totalPath);
-            if (B.empty()){
-                B.push(make_pair(root_dis+spur_dis, totalPath));
+            int total_dis = root_dis + spur_dis;
+            if (B.empty() && total_dis<inf){
+                B.push(make_pair(total_dis, totalPath));
             }
-            priority_queue<vPair, vector<vPair>, greater<vPair>> temp;         
+            priority_queue<vPair, vector<vPair>, greater<vPair> > temp;         
             bool found = false;
             while (!B.empty()) {
                 vPair dis_path = B.top(); 
@@ -208,8 +210,8 @@ vector<vector<int>> yen(Graph g, int s, int d, int K) {
                     found = true;
                 }   
             }
-            if (!found) {
-                temp.push(make_pair(root_dis+spur_dis, totalPath));
+            if (!found && total_dis<inf) {
+                temp.push(make_pair(total_dis, totalPath));
             }
             B = temp;
             // Add back the edges and nodes that were removed from the graph
@@ -227,6 +229,7 @@ vector<vector<int>> yen(Graph g, int s, int d, int K) {
         // In fact we should rather use shift since we are removing the first element
         B.pop();
     }
+    cout << "The size of shortest path list: " << A.size() << endl;
     return A;
 }
 
@@ -259,9 +262,9 @@ int main()
     int cost = g.dist[4];
     cout << cost << endl;
     */
-    vector<vector<int>> A;
+    vector<vector<int> > A;
     // shortest path from node 0 to 4, K = 8
-    A = yen(g, 0, 4, 8);
+    A = yen(g, 0, 4, 10);
     for(auto it = A.begin(); it != A.end(); ++it) {
         showlist(*it); 
         cout << "\n";
